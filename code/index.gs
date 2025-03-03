@@ -76,6 +76,7 @@ const _CodeLocator = () => {
       throw `getResource must be the ScriptApp.getResource function - you provided a ${typeof getResource}`
     }
     _getResource = getResource
+    console.log ('..get resource was set', getResource)
     return getGetResource()
   }
   /**
@@ -124,6 +125,7 @@ const _CodeLocator = () => {
           console.log('...cant get code from an apps script library\n...from your main script,call CodeLocator.setGetResource(ScriptApp.getResource)')
           return ''
         }
+        console.log ('getting resource', fileName, getResource()(fileName))
         const blob = getGetResource()(fileName)
         return blob ? blob.getDataAsString() : ''
       } else {
@@ -142,7 +144,7 @@ const _CodeLocator = () => {
   function getLocations() {
 
     const frozen = Error.prepareStackTrace;
-
+throw new Error()
     // fiddle with the native
     Error.prepareStackTrace = (_, stack) => stack;
 
@@ -150,7 +152,10 @@ const _CodeLocator = () => {
     Error.captureStackTrace(capture, this);
 
     // stack at each depth - skip the first as its from here
-    const result = capture.stack.slice(1).map((line, depth) => {
+    console.log (capture.stack.length)
+  
+    const result = capture.stack.slice(0).map((line, depth) => {
+      console.log (line.getFileName())
       const fileName = line.getFileName() || 'unable to trace fileName'
       return {
         depth,
@@ -282,8 +287,9 @@ const _CodeLocator = () => {
   const getCode = (depth, options) => {
 
     const { options: dOptions, depth: dDepth } = decorateOptions(depth, options)
-
+    console.log ('getting code', options)
     const locations = getLocations()
+    console.log (locations)
     const location = locations[dDepth + 1]
     if (!location) return {
       location: null,
